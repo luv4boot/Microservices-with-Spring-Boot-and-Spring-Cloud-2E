@@ -1,9 +1,9 @@
 package com.luv4code.api.core.review;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 public class Review {
     private final int productId;
