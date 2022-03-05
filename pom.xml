@@ -10,6 +10,8 @@
         <module>microservices/review-service</module>
         <module>microservices/recommendation-service</module>
         <module>microservices/product-composite-service</module>
+        <module>api</module>
+        <module>util</module>
     </modules>
 
     <parent>
