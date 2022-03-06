@@ -30,4 +30,6 @@ public class ProductServiceImpl implements ProductService {
 
         return new Product(productId, "name-" + productId, 123, serviceUtil.getServiceAddress());
     }
+
+
 }
