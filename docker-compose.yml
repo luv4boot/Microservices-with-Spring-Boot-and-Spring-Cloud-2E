@@ -52,7 +52,7 @@ services:
     image: mysql:5.7.32
     mem_limit: 512m
     ports:
-      - "3306:3306"
+      - "3305:3305"
     environment:
       - MYSQL_ROOT_PASSWORD=rootpwd
       - MYSQL_DATABASE=review-db
