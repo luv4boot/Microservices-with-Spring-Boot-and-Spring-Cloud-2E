@@ -2,11 +2,24 @@ server:
   port: 7003
   error:
     include-message: always
+
 logging:
   level:
     root: info
     com.luv4code: debug
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    username: user
+    password: pwd
+    url: jdbc:mysql://localhost/review-db
+    hikari:
+      initialization-fail-timeout: 60000
 ---
 spring:
   config:

@@ -16,13 +16,13 @@ public interface RecommendationMapper {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "version", ignore = true)
     })
-    RecommendationEntity apiToEntity(Recommendation body);
+    RecommendationEntity apiToEntity(Recommendation api);
 
     @Mappings({
             @Mapping(target = "rate", source = "entity.rating"),
             @Mapping(target = "serviceAddress", ignore = true)
     })
-    Recommendation entityToApi(RecommendationEntity newEntity);
+    Recommendation entityToApi(RecommendationEntity entity);
 
     List<Recommendation> entityListToApiList(List<RecommendationEntity> entityList);
 
