@@ -6,6 +6,11 @@ logging:
   level:
     root: info
     com.luv4code: debug
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+spring.data.mongodb:
+  host: localhost
+  port: 27017
+  database: recommendation-db
 
 ---
 spring:
