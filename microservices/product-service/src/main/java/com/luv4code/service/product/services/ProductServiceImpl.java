@@ -8,52 +8,78 @@ import com.luv4code.service.product.persistence.ProductEntity;
 import com.luv4code.service.product.persistence.ProductRepository;
 import com.luv4code.service.product.services.mapper.ProductMapper;
 import com.luv4code.util.http.ServiceUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
+import static java.util.logging.Level.FINE;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ServiceUtil serviceUtil;
+
     private final ProductRepository repository;
+
     private final ProductMapper mapper;
 
+    @Autowired
+    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, ServiceUtil serviceUtil) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.serviceUtil = serviceUtil;
+    }
+
     @Override
-    public Product getProduct(int productId) {
+    public Mono<Product> createProduct(Product body) {
+
+        if (body.getProductId() < 1) {
+            throw new InvalidInputException("Invalid productId: " + body.getProductId());
+        }
+
+        ProductEntity entity = mapper.apiToEntity(body);
+        Mono<Product> newEntity = repository.save(entity)
+                .log(log.getName(), FINE)
+                .onErrorMap(
+                        DuplicateKeyException.class,
+                        ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId()))
+                .map(e -> mapper.entityToApi(e));
+
+        return newEntity;
+    }
+
+    @Override
+    public Mono<Product> getProduct(int productId) {
+
         if (productId < 1) {
             throw new InvalidInputException("Invalid productId: " + productId);
         }
 
-        ProductEntity entity = repository.findByProductId(productId).orElseThrow(() -> new NotFoundException("No product found for productId: " + productId));
+        log.info("Will get product info for id={}", productId);
 
-        Product response = mapper.entityToApi(entity);
-        response.setServiceAddress(serviceUtil.getServiceAddress());
-
-        log.debug("getProduct: found productId: {}", response.getProductId());
-
-        return response;
+        return repository.findByProductId(productId)
+                .switchIfEmpty(Mono.error(new NotFoundException("No product found for productId: " + productId)))
+                .log(log.getName(), FINE)
+                .map(e -> mapper.entityToApi(e))
+                .map(e -> setServiceAddress(e));
     }
 
     @Override
-    public Product createProduct(Product product) {
-        try {
-            ProductEntity entity = mapper.apiToEntity(product);
-            ProductEntity newEntity = repository.save(entity);
+    public Mono<Void> deleteProduct(int productId) {
 
-            log.debug("createProduct: entity created for productId: {}", product.getProductId());
-            return mapper.entityToApi(newEntity);
-        } catch (DuplicateKeyException ex) {
-            throw new InvalidInputException("Duplicate Key, Product Id: " + product.getProductId());
+        if (productId < 1) {
+            throw new InvalidInputException("Invalid productId: " + productId);
         }
+
+        log.debug("deleteProduct: tries to delete an entity with productId: {}", productId);
+        return repository.findByProductId(productId).log(log.getName(), FINE).map(e -> repository.delete(e)).flatMap(e -> e);
     }
 
-    @Override
-    public void deleteProduct(int productId) {
-        log.debug("deleteProduct: tries to delete an entity with productId: {}", productId);
-        repository.findByProductId(productId).ifPresent(e -> repository.delete(e));
+    private Product setServiceAddress(Product e) {
+        e.setServiceAddress(serviceUtil.getServiceAddress());
+        return e;
     }
 }

@@ -5,9 +5,8 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Getter
-//@Setter
-//@NoArgsConstructor
+import static java.lang.String.format;
+
 @Document(collection = "products")
 public class ProductEntity {
 
@@ -31,6 +30,12 @@ public class ProductEntity {
         this.name = name;
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        return format("ProductEntity: %s", productId);
+    }
+
 
     public String getId() {
         return id;

@@ -88,7 +88,7 @@ public class PersistenceTests extends MongoDbTestBase {
 
         // Update the entity using the first entity object
         entity1.setName("n1");
-        repository.save(entity1);
+        repository.save(entity1).block();
 
         // Update the entity using the second entity object.
         // This should fail since the second entity now holds an old version number, that is, an Optimistic Lock Error
