@@ -22,7 +22,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
+        "spring.cloud.stream.defaultBinder=rabbit",
+        "logging.level.com.luv4code=DEBUG",
+        "eureka.client.enabled=false"})
 public class ReviewServiceApplicationTests extends MySqlTestBase {
     @Autowired
     private WebTestClient client;
