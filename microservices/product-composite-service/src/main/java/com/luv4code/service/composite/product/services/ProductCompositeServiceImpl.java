@@ -21,7 +21,7 @@ import static java.util.logging.Level.FINE;
 public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     private final ServiceUtil serviceUtil;
-    private ProductCompositeIntegration integration;
+    private final ProductCompositeIntegration integration;
 
     @Autowired
     public ProductCompositeServiceImpl(ServiceUtil serviceUtil, ProductCompositeIntegration integration) {
@@ -31,7 +31,9 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     @Override
     public Mono<Void> createProduct(ProductAggregate body) {
+
         try {
+
             List<Mono> monoList = new ArrayList<>();
 
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
@@ -60,7 +62,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
                     .then();
 
         } catch (RuntimeException re) {
-            log.warn("createCompositeProduct failed", re.toString());
+            log.warn("createCompositeProduct failed: {}", re.toString());
             throw re;
         }
     }
@@ -68,13 +70,9 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
     @Override
     public Mono<ProductAggregate> getProduct(int productId) {
 
-        log.debug("Will get composite product info for product.id={}", productId);
+        log.info("Will get composite product info for product.id={}", productId);
         return Mono.zip(
-                        values -> createProductAggregate(
-                                (Product) values[0],
-                                (List<Recommendation>) values[1],
-                                (List<Review>) values[2],
-                                serviceUtil.getServiceAddress()),
+                        values -> createProductAggregate((Product) values[0], (List<Recommendation>) values[1], (List<Review>) values[2], serviceUtil.getServiceAddress()),
                         integration.getProduct(productId),
                         integration.getRecommendations(productId).collectList(),
                         integration.getReviews(productId).collectList())
@@ -84,6 +82,7 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
     @Override
     public Mono<Void> deleteProduct(int productId) {
+
         try {
 
             log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
@@ -129,6 +128,4 @@ public class ProductCompositeServiceImpl implements ProductCompositeService {
 
         return new ProductAggregate(productId, name, weight, recommendationSummaries, reviewSummaries, serviceAddresses);
     }
-
-
 }

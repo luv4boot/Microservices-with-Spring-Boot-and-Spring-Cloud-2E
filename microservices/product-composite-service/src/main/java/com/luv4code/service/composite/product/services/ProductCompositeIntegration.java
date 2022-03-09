@@ -43,7 +43,9 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     private final String productServiceUrl;
     private final String recommendationServiceUrl;
     private final String reviewServiceUrl;
+
     private final StreamBridge streamBridge;
+
     private final Scheduler publishEventScheduler;
 
     @Autowired
@@ -74,7 +76,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort;
     }
 
-
     @Override
     public Mono<Product> createProduct(Product body) {
 
@@ -84,17 +85,12 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         }).subscribeOn(publishEventScheduler);
     }
 
-
     @Override
     public Mono<Product> getProduct(int productId) {
         String url = productServiceUrl + "/product/" + productId;
         log.debug("Will call the getProduct API on URL: {}", url);
 
-        return webClient.get().uri(url).retrieve()
-                .bodyToMono(Product.class)
-                .log(log.getName(), FINE)
-                .onErrorMap(WebClientResponseException.class,
-                        ex -> handleException(ex));
+        return webClient.get().uri(url).retrieve().bodyToMono(Product.class).log(log.getName(), FINE).onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
     }
 
     @Override
@@ -186,7 +182,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
                 .build();
         streamBridge.send(bindingName, message);
     }
-
 
     private Throwable handleException(Throwable ex) {
 

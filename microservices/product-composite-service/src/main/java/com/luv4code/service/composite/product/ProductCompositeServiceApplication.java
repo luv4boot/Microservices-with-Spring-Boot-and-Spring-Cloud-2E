@@ -16,6 +16,7 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Lazy;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -26,6 +27,10 @@ import java.util.Map;
 @ComponentScan("com.luv4code")
 @Slf4j
 public class ProductCompositeServiceApplication {
+
+    @Lazy
+    @Autowired
+    ProductCompositeIntegration integration;
 
     @Value("${api.common.version}")
     String apiVersion;
@@ -88,8 +93,6 @@ public class ProductCompositeServiceApplication {
         return Schedulers.newBoundedElastic(threadPoolSize, taskQueueSize, "publish-pool");
     }
 
-    @Autowired
-    ProductCompositeIntegration integration;
 
     @Bean
     ReactiveHealthContributor coreServices() {
