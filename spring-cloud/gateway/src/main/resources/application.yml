@@ -1,5 +1,7 @@
 server.port: 8080
+
 spring.application.name: gateway
+
 app.eureka-server: localhost
 
 eureka:
@@ -8,8 +10,6 @@ eureka:
       defaultZone: http://${app.eureka-server}:8761/eureka/
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
-    fetch-registry: true
-    register-with-eureka: true
   instance:
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 5
