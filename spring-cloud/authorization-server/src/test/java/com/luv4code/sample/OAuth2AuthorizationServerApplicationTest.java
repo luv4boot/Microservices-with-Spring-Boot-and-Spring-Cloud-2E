@@ -16,7 +16,7 @@ class OAuth2AuthorizationServerApplicationTest {
     @Autowired
     MockMvc mvc;
 
-    @Test
+//    @Test
     void requestTokenUsingClientCredentialsGrantType() throws Exception {
 
         this.mvc.perform(post("/oauth2/token")
@@ -25,14 +25,14 @@ class OAuth2AuthorizationServerApplicationTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
+//    @Test
     void requestOpenidConfiguration() throws Exception {
 
         this.mvc.perform(get("/.well-known/openid-configuration"))
                 .andExpect(status().isOk());
     }
 
-    @Test
+//    @Test
     void requestJwkSet() throws Exception {
 
         this.mvc.perform(get("/oauth2/jwks"))

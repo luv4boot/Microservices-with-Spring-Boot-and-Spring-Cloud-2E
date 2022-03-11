@@ -1,7 +1,5 @@
 package com.luv4code.sample.jose;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -9,21 +7,41 @@ import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
-public class KeyGeneratorUtils {
-    public static KeyPair generateRsaKey() {
+/**
+ * @author Joe Grandja
+ * @since 0.1.0
+ */
+final class KeyGeneratorUtils {
+
+    private KeyGeneratorUtils() {
+    }
+
+    static SecretKey generateSecretKey() {
+        SecretKey hmacKey;
+        try {
+            hmacKey = KeyGenerator.getInstance("HmacSha256").generateKey();
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+        return hmacKey;
+    }
+
+    static KeyPair generateRsaKey() {
         KeyPair keyPair;
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
         }
         return keyPair;
     }
 
-    public static KeyPair generateEcKey() {
+    static KeyPair generateEcKey() {
         EllipticCurve ellipticCurve = new EllipticCurve(
                 new ECFieldFp(
                         new BigInteger("115792089210356248762697446949407573530086143415290314195533631308867097853951")),
@@ -35,29 +53,17 @@ public class KeyGeneratorUtils {
         ECParameterSpec ecParameterSpec = new ECParameterSpec(
                 ellipticCurve,
                 ecPoint,
-                new BigInteger("115792089210356248762697446949407573529996955224135760342422259061068512044369"), 1);
+                new BigInteger("115792089210356248762697446949407573529996955224135760342422259061068512044369"),
+                1);
 
         KeyPair keyPair;
-
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(ecParameterSpec);
             keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
         }
         return keyPair;
-    }
-
-    public static SecretKey generateSecretKey() {
-        SecretKey hmacKey;
-
-        try {
-            hmacKey = KeyGenerator.getInstance("HmacSha256").generateKey();
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-
-        return hmacKey;
     }
 }

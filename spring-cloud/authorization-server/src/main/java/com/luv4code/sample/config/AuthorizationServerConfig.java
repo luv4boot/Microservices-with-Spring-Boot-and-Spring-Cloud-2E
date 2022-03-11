@@ -5,7 +5,8 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,15 +22,21 @@ import org.springframework.security.oauth2.server.authorization.config.ProviderS
 import java.time.Duration;
 import java.util.UUID;
 
+/**
+ * @author Joe Grandja
+ * @since 0.0.1
+ */
 @Configuration(proxyBeanMethods = false)
 @Import(OAuth2AuthorizationServerConfiguration.class)
-@Slf4j
 public class AuthorizationServerConfig {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationServerConfig.class);
+
+    // @formatter:off
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
 
-        log.info("register OAUth client allowing all grant flows...");
+        LOG.info("register OAUth client allowing all grant flows...");
         RegisteredClient writerClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("writer")
                 .clientSecret("secret")
@@ -62,6 +69,7 @@ public class AuthorizationServerConfig {
                 .build();
         return new InMemoryRegisteredClientRepository(writerClient, readerClient);
     }
+    // @formatter:on
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -74,6 +82,4 @@ public class AuthorizationServerConfig {
     public ProviderSettings providerSettings() {
         return new ProviderSettings().issuer("http://auth-server:9999");
     }
-
-
 }

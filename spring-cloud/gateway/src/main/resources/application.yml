@@ -12,6 +12,7 @@ app:
   eureka-username: u
   eureka-password: p
   eureka-server: localhost
+  auth-server: localhost
 
 eureka:
   client:
@@ -49,6 +50,11 @@ spring.cloud.gateway.routes:
     uri: lb://product-composite
     predicates:
       - Path=/openapi/**
+
+  - id: product-composite-swagger-ui-webjars
+    uri: lb://product-composite
+    predicates:
+      - Path=/webjars/**
 
   - id: eureka-api
     uri: http://${app.eureka-server}:8761
@@ -92,6 +98,8 @@ spring.cloud.gateway.routes:
     filters:
       - SetPath=/501
 
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
+
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
@@ -104,4 +112,6 @@ logging:
 ---
 spring.config.activate.on-profile: docker
 
-app.eureka-server: eureka
+app:
+  eureka-server: eureka
+  auth-server: auth-server
